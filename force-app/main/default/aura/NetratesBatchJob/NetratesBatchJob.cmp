@@ -1,0 +1,90 @@
+<aura:component controller="ContractAndRateGenController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<aura:attribute name="selectedCarrier" type="string"/>
+    <aura:attribute name="carrierList" type="List"/>
+    <aura:attribute name="selectedServiceType" type="string"/>
+	<aura:attribute name="serviceTypeList" type="List"/>
+    <aura:attribute name="EffectiveDatesWithoutStrings" type="List"/>
+    <aura:attribute name="selectedPackaging" type="string" default="Customer Packaging"/>
+    <aura:attribute name="servicePackagingList" type="List"/>
+    <aura:attribute name="importExportSelection" type="string"/>
+    <aura:attribute name="firstdate" type="string"/>
+    <aura:attribute name="EffectiveDates" type="List"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <div class="slds-theme_default slds-p-left_xx-small">
+        <div class="slds-text-heading_large slds-p-bottom_xx-small">Rate Generator</div>
+
+        <div class="slds-form">
+            <div class="slds-m-bottom_medium">
+                <legend class="slds-form-element__legend slds-form-element__label">Selections</legend>
+
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col">
+                   			
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <lightning:select label="Carrier" value="{!v.selectedCarrier}" onchange="{!c.carrierSelectionOnChange}">
+                                    <option text="--None--" value=""></option>
+                                    <aura:iteration items="{!v.carrierList}" var="carrier">
+                                        <option text="{!carrier}" value="{!carrier}"></option>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <lightning:select aura:id="serviceType" label="Service Types" value="{!v.selectedServiceType}" onchange="{!c.serviceTypeSelectionOnChange}">
+                                    <option text="--None--" value=""></option>
+                                    <aura:iteration items="{!v.serviceTypeList}" var="st" indexVar="index">
+                                        <option text="{!st.Name}" value="{!st.Id}"></option>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                        </div>
+                         <div class="slds-form-element">
+                            <div class="slds-form-element__control">                               
+                                <lightning:select label="Effective Date" aura:id="selectedDateValue">
+                                    <aura:iteration items="{!v.EffectiveDatesWithoutStrings}" var="eachDate">
+                                        <option text="{!eachDate}" value="{!eachDate}"></option>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                        </div>	
+                        
+                    </div>
+                    <div class="slds-col">
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <lightning:select label="Service Packaging" value="{!v.selectedPackaging}">
+                                    <aura:iteration items="{!v.servicePackagingList}" var="st">
+                                        <option text="{!st}" value="{!st}"></option>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                        </div>
+
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <lightning:select label="Import/Export" value="{!v.importExportSelection}">
+                                    <option text="--None--" value=""></option>
+                                    <option text="Import" value="Import"></option>
+                                    <option text="Export" value="Export"></option>
+                                </lightning:select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control slds-m-top_large">
+                        <lightning:button variant="brand-outline" label="Batch Job" onclick="{!c.batchJobGeneration}" />
+                       
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</aura:component>

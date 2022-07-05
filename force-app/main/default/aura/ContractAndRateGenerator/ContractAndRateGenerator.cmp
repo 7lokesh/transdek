@@ -1,0 +1,287 @@
+<aura:component controller="ContractAndRateGenController" implements="flexipage:availableForRecordHome,force:appHostable,force:hasRecordId,force:lightningQuickAction" access="global">
+    <aura:attribute name="success" type="string"/>
+    <aura:attribute name="carrierList" type="List"/>
+    <aura:attribute name="serviceTypeList" type="List"/>
+    <aura:attribute name="totalServiceTypeList" type="Object[]"/>
+    <aura:attribute name="totalServiceTypeListRtValue" type="List"/>
+   	<aura:attribute name="totalServiceTypeMap" type="Map"/>
+    <aura:attribute name="years" type="List"/>
+    <aura:attribute name="EffectiveDates" type="List"/>
+    <aura:attribute name="EffectiveDatesWithoutStrings" type="List"/>
+    <aura:attribute name="serviceZoneList" type="List"/>
+    <aura:attribute name="zoneDualListOption" type="List"/>
+    <aura:attribute name="servicePackagingList" type="List"/>
+    <aura:attribute name="firstdate" type="string"/>
+
+    <aura:attribute name="accountRecord" type="Object"/>
+    <aura:attribute name="contractRecord" type="Object"/>
+    <aura:attribute name="NetRateRecord" type="Net_Rate__c"/>
+    <aura:attribute name="selectedCarrier" type="string"/>
+    <aura:attribute name="selectedServiceType" type="string"/>
+    <aura:attribute name="selectedYear" type="string"/>
+    <aura:attribute name="selectedDate" type="string"/>
+    <aura:attribute name="selectedPackaging" type="string" default="Customer Packaging"/>
+    <aura:attribute name="importExportSelection" type="string"/>
+
+    <aura:attribute name="weightDiscountRecords" type="List"/>
+    <aura:attribute name="weightDiscountTableHeaders" type="List"/>
+    <aura:attribute name="weightDiscounts_updated" type="List"/>
+
+    <aura:attribute name="discountRecords" type="List"/>
+    <aura:attribute name="discountTableHeaders" type="List"/>
+    <aura:attribute name="discounts_updated" type="List"/>
+
+    <aura:attribute name="minReductionRecords" type="List"/>
+    <aura:attribute name="minReductionTableHeaders" type="List"/>
+    <aura:attribute name="minReductions_updated" type="List"/>
+
+    <aura:attribute name="otherServiceTypeDualListOptions" type="List"/>
+    <aura:attribute name="otherServicesListValue" type="List" default="[]"/>
+    <aura:attribute name="otherServices_selected" type="List"/>
+
+    <aura:attribute name="netRateMasterTable" type="List"/>
+    <aura:attribute name="upInsertnetRateMasterTable" type="List"/>
+    <aura:attribute name="netRateMasterMap" type="Map"/>
+    <aura:attribute name="netRateMasterMap1" type="Map"/>
+    <aura:attribute name="netRateTableHeaders" type="List"/>
+	<aura:attribute name="shipmentMethodSelected" type="Object"/>
+    <aura:attribute name="spinner" type="boolean"/>
+
+    <aura:attribute name="showSpinner" type="boolean" default="false"/>
+    <aura:attribute name="disableSave" type="boolean" default="true"/>
+    <aura:attribute name="openTable" type="boolean" default="false"/>
+    <aura:attribute name="SuccessTrue" type="boolean" default="true"/>
+    <aura:attribute name="dummyDates" type="String[]" default="2022-01-03,2022-01-04"/>
+    
+     <aura:attribute name="sortedBy" type="Double" default="weight"/>
+    <aura:attribute name="sortedDirection" type="Double" default="asc"/>
+    <aura:attribute name="zone" type="boolean" default="true"/>
+    <aura:attribute name="selServiceName" type="string" default="true"/>
+
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="c:SendNerRates" action="{!c.netRateSettingData}"/>
+    
+    <force:recordData aura:id="recordLoader" recordId="{!v.recordId}" fields="Id,Name,Customer__c,Customer__r.Name" targetFields="{!v.contractRecord}"/>
+
+    <div class="slds-theme_default slds-p-left_xx-small">
+        <div class="slds-text-heading_large slds-p-bottom_xx-small">Rate Generator</div>
+
+        <div class="slds-form">
+            <div class="slds-m-bottom_medium">
+                <legend class="slds-form-element__legend slds-form-element__label">Selections</legend>
+
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col">
+                   			
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <lightning:select label="Carrier" value="{!v.selectedCarrier}" onchange="{!c.carrierSelectionOnChange}">
+                                    <option text="--None--" value=""></option>
+                                    <aura:iteration items="{!v.carrierList}" var="carrier">
+                                        <option text="{!carrier}" value="{!carrier}"></option>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <lightning:select aura:id="serviceType" label="Service Types" name ="{!v.selServiceName}" value="{!v.selectedServiceType}" onchange="{!c.serviceTypeSelectionOnChange}">
+                                    <option text="--None--" value=""></option>
+                                    <aura:iteration items="{!v.serviceTypeList}" var="st" indexVar="index">
+                                        <option text="{!st.Name}" value="{!st.Id}"></option>
+                                        <!--<option text="{!st.Name}" value="{!st.Associated_Service_for_Rates__c}"></option>-->
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                        </div>
+                         <div class="slds-form-element">
+                            <div class="slds-form-element__control">                               
+                                <lightning:select label="Effective Date" aura:id="selectedDateValue">
+                                    <aura:iteration items="{!v.EffectiveDatesWithoutStrings}" var="eachDate">
+                                        <option text="{!eachDate}" value="{!eachDate}"></option>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                        </div>	
+                        
+                    </div>
+                    <div class="slds-col">
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <lightning:select label="Service Packaging" value="{!v.selectedPackaging}">
+                                    <aura:iteration items="{!v.servicePackagingList}" var="st">
+                                        <option text="{!st}" value="{!st}"></option>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                        </div>
+
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <lightning:select label="Import/Export" value="{!v.importExportSelection}">
+                                    <option text="--None--" value=""></option>
+                                    <option text="Import" value="Import"></option>
+                                    <option text="Export" value="Export"></option>
+                                </lightning:select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control slds-m-top_large">
+                        <lightning:button variant="brand-outline" label="Enter Discounts" onclick="{!c.showDiscountInputs}" />
+                       
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <aura:if isTrue="{!not(empty(v.discountRecords))}">
+            <div>Discounts</div> 
+            <!--
+            <lightning:datatable aura:id="discountTable" 
+                data="{!v.discountRecords}" columns="{!v.discountTableHeaders}" 
+                keyField="id"
+                onsave="{!c.saveDiscountChanges}"
+                />
+            -->
+            <lightning:button variant="brand" label="Apply to All" title="Apply to All" onclick="{!c.populateAllRowsDiscount}"/>
+            <lightning:button variant="brand" label="Save Draft" title="Save Draft" onclick="{!c.saveDraft}"/>
+            <lightning:button variant="brand" label="Calculate Minimums" title="Calculate Minimums" onclick="{!c.calculateMinimums}"/>
+        
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                <thead>
+                    <tr>
+                        <th>Zone #</th>
+                        <th>Earned Discount %</th>
+                        <th>Auto Bonus Discount %</th>
+                        <th>Discount %</th>
+                        <th>Min Reduction</th>
+                        <th>Published Min</th>
+                        <th>Published Min Weight</th>
+                        <th>Published Min Zone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.discountRecords}" var="dr">
+                        <tr>
+                            <td><lightning:input type="text" value="{!dr.zone}" style="width: 50px" disabled="{!v.zone}"/></td>
+                            <td><lightning:input type="text" value="{!dr.earnedDiscount}"/></td>
+                            <td><lightning:input type="text" value="{!dr.autoBonusDiscount}"/></td>
+                            <td><lightning:input type="text" value="{!dr.discount}"/></td>
+                            <td><lightning:input type="text" value="{!dr.minReduction}"/></td>
+                            <td><lightning:input type="text" value="{!dr.publishedMin}"/></td>
+                            <td><lightning:input type="text" value="{!dr.publishedMinWeight}"/></td>
+                            <td><lightning:input type="text" value="{!dr.publishedMinZone}"/></td>  
+                        </tr>
+                    </aura:iteration>
+                </tbody>    
+            </table>
+        </aura:if>
+        
+        <aura:if isTrue="{!not(empty(v.minReductionRecords))}">
+           	
+            <div>Minimum Reduction Discounts</div>
+            <lightning:button variant="brand" label="Apply to All" title="Apply to All" onclick="{!c.populateAllRowsMinRecords}"/>
+            <!--
+            <lightning:datatable aura:id="minReductionTable" 
+                data="{!v.minReductionRecords}" columns="{!v.minReductionTableHeaders}" 
+                keyField="id"
+                onsave="{!c.saveMinReductionChanges}" 
+                />
+            -->
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                <thead>
+                    <tr>
+                        <th>Zone #</th>
+                        <th>Min Reduction</th>
+                        <th>Published Min</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.minReductionRecords}" var="mr">
+                        <tr>
+                            <td><lightning:input type="text" value="{!mr.zone}"/></td>
+                            <td><lightning:input type="text" value="{!mr.minReduction}"/></td>
+                            <td><lightning:input type="text" value="{!mr.publishedMin}"/></td>
+                        </tr>
+                    </aura:iteration>
+                </tbody>    
+            </table>
+        </aura:if>
+        
+        <aura:if isTrue="{!not(empty(v.serviceZoneList))}">
+            <div>Weight Discounts</div>
+            <!--
+            <lightning:datatable aura:id="weightDiscountTable" 
+                data="{!v.weightDiscountRecords}" columns="{!v.weightDiscountTableHeaders}" 
+                keyField="id" 
+                onsave="{!c.saveWeightDiscountChanges}"
+                />
+
+            <div class="slds-form-element__control slds-m-top_large">
+                <lightning:button variant="base" label="Add Row" onclick="{!c.addTableRow}" />
+            </div>
+            -->
+            
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                <thead>
+                    <tr>
+                        <th>Weight Min</th>
+                        <th>Weight Max</th>
+                        <th>Discount %</th>
+                        <th>Applicable Zones</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.weightDiscountRecords}" var="wd">
+                        <tr>
+                            <!--<td><lightning:input type="text" value="{!wd.zone}"/></td>-->
+                            <td><lightning:input type="text" value="{!wd.weightMin}"/></td>
+                            <td><lightning:input type="text" value="{!wd.weightMax}"/></td>
+                            <td><lightning:input type="text" value="{!wd.discount}"/></td>
+                            <td><lightning:dualListbox name="zoneList" label="Apply to these Zones" sourceLabel="Available" selectedLabel="Chosen" 
+                                options="{!v.zoneDualListOption}" value="{!wd.selectedZones}" /></td>
+                        </tr>
+                    </aura:iteration>
+                </tbody>    
+            </table>
+          
+            <div class="slds-form-element__control slds-m-top_large">
+                <lightning:button variant="base" label="Add Row" onclick="{!c.addTableRow}" />
+            </div>
+        </aura:if>
+             
+        
+        <lightning:dualListbox name="otherServices" aura:id="serviceTypeDual" label="Apply above to these services" sourceLabel="Available" selectedLabel="Chosen" 
+            options="{!v.otherServiceTypeDualListOptions}" value="{!v.otherServicesListValue}" onchange="{!c.applyDiscountsToServices}"/>
+  
+        
+        <div style="padding-top:5px;">
+            <lightning:button variant="brand-outline" label="Preview Rates" onclick="{!c.generateData}" />
+            <lightning:button variant="brand" label="Save Rate Data" value ="refresh" onclick="{!c.saveNetRates}" disabled="{!v.disableSave}"/>
+        </div>
+    
+        <aura:if isTrue="{!not(empty(v.netRateMasterTable))}">
+            <div style="height:200px">
+            <lightning:datatable aura:id="netRateTable" 
+                data="{!v.netRateMasterTable}" columns="{!v.netRateTableHeaders}" 
+                keyField="zone" onsort="{!c.updateColumnSorting}" 
+                                        sortedBy="{!v.sortedBy}"  
+                        sortedDirection="{!v.sortedDirection}"/>
+            </div>
+        </aura:if>
+
+        <aura:if isTrue="{!v.showSpinner}">
+            <lightning:spinner aura:id="mySpinner" variant="brand" size="large" class="slds-is-fixed" alternativeText="Loading..."/>
+        </aura:if>
+        
+        
+    </div>
+</aura:component>

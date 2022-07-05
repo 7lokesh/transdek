@@ -1,0 +1,50 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="CreateClonedContractRecords">
+    <aura:attribute name="contractObj" type="object" default="{'sobjectType':'Customer_Contract__c',
+                                                             'Name':'',                                                         
+                                                             'Customer__c':''
+                                                              }"/>
+    <aura:attribute name="ContractNewRec" type="object"/>
+    <aura:attribute name="newAccountLookup" type="sObject" default='{}'/>
+    <aura:attribute name="selectedLookUpRecord" type="sObject" default='{}'/>
+    <aura:attribute name="contractId" type="String"/>
+    <aura:attribute name="accountId" type="String"/>
+    <aura:attribute name="contractList" type="Customer_Contract__c[]"/>
+    <aura:attribute name="firstname1" type="String"/>
+    <aura:attribute name="netRateMasterTable" type="List"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.showContractsRecords}"/>
+    <aura:handler name="SendRecordEvent" event="c:SendselectedsRecordEvent" action="{!c.setLookupRecord}"/>
+        
+    <article class="slds-card">
+                            <div class="slds-card__header slds-grid">
+    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+      <div class="slds-media__figure">
+        <span class="slds-icon_container slds-icon-standard-account" title="account">            
+          <lightning:icon iconName="standard:contract" alternativeText="Contract" />
+        </span>
+      </div>
+      <div class="slds-media__body">
+        <h2 class="slds-card__header-title">
+          <a href="javascript:void(0);" class="slds-card__header-link slds-truncate" title="Accounts">
+            <span>Contract Record Creation</span>
+          </a>
+        </h2>
+      </div>
+    </header>
+            </div>
+                    	<div class="slds-card__body  slds-card__body_inner">
+
+        	<lightning:input  value="{!v.contractObj.Name}" label="Enter Contract Name" placeholder="Enter Contract Name..."/>
+            <c:customLookup objectAPIName="Customer__c" IconName="standard:customer" selectedRecord="{!v.selectedLookUpRecord}" label="Customer" valueAttr="{!v.recordId}"/>
+                
+        </div>
+    </article>
+  
+         <footer>
+        <div class="modal-footer slds-modal__footer attach-to-bottom slds-button_brand">
+           <!-- <lightning:button variant="base" label="Cancel" title="Cancel action" onclick="{! c.cancelClick }"/>-->
+            <lightning:button variant="base" label="Save" title="Save action" onclick="{! c.saveClick }"/>
+        </div>
+    </footer>
+    
+</aura:component>

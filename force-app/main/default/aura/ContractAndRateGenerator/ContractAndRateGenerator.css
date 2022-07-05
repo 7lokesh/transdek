@@ -1,0 +1,8 @@
+.THIS .slds-table tr th:first-child{
+    width: 0px !important;
+}
+
+.THIS .slds-grid_align-end
+{
+    justify-content: left !important; 
+}
