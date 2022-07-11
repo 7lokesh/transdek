@@ -174,6 +174,10 @@
         
         var minReductionData = component.get("v.minReductionRecords");
         var currentWeightDiscounts = component.get("v.weightDiscountRecords");
+        console.log('discountData of gen'+JSON.stringify(discountData));
+                console.log('minReductionData gen'+JSON.stringify(minReductionData));
+        console.log('currentWeightDiscounts gen'+JSON.stringify(currentWeightDiscounts));
+
         var selDateValue = component.get('v.firstdate');
         const [month, day , year] = selDateValue.split('-');
         var unqDate = year+'-'+month+'-'+day;     

@@ -33,7 +33,6 @@ public with sharing class ContractAndRateGenController {
     @AuraEnabled //instead of year pass an date field.
     public static List<string> getServiceZones(string carrier, date effDate, string serviceType, string packaging){        
         Set<string> zoneSet = new Set<string>(); 
-		Shipping_Method__c smRecord = [SELECT Id,Name FROM Shipping_Method__c WHERE Id=:serviceType];
         for(Published_Rate__c pr : [select Zone__c,Effective_Date__c from Published_Rate__c where Carrier__c = :carrier and Effective_Date__c = :effDate and Service_Type__c = :serviceType and Service_Packaging__c = :packaging]){
             zoneSet.add(pr.Zone__c);
         }        
@@ -593,7 +592,7 @@ return (publishedRate - minReduction);
         }
         return json.serialize(discountList);
     } 
- /*   @AuraEnabled
+   @AuraEnabled
     public static void updateNetRateOnPublishedRates(string carrier, string servicetype,string selectedPackaging,Date effDate,string importExportSel){
         system.debug('carrier'+carrier);
         system.debug('servicetype'+servicetype);
@@ -601,6 +600,6 @@ return (publishedRate - minReduction);
         system.debug('effDate'+effDate);
         system.debug('importExportSel'+importExportSel);
         //return 'success';
-        BatchApexOnNetratesUpdate netRateUpdate = new BatchApexOnNetratesUpdate(carrier,servicetype,selectedPackaging,importExportSel,effDate);
-	}*/
+        BatchApexOnNetratesUpdate netRateUpdate = new BatchApexOnNetratesUpdate(carrier,servicetype,selectedPackaging,importExportSel,date.newInstance(effDate.year(), effDate.month(), effDate.day()));
+	}
 }

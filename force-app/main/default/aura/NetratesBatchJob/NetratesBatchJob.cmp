@@ -1,5 +1,7 @@
 <aura:component controller="ContractAndRateGenController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
 	<aura:attribute name="selectedCarrier" type="string"/>
+    <aura:attribute name="serviceZoneList" type="List"/>
+        <aura:attribute name="serviceZoneStrings" type="String[]"/>
     <aura:attribute name="carrierList" type="List"/>
     <aura:attribute name="selectedServiceType" type="string"/>
 	<aura:attribute name="serviceTypeList" type="List"/>
@@ -9,6 +11,11 @@
     <aura:attribute name="importExportSelection" type="string"/>
     <aura:attribute name="firstdate" type="string"/>
     <aura:attribute name="EffectiveDates" type="List"/>
+    <aura:attribute name="zoneDualListOption" type="List"/>
+        <aura:attribute name="weightDiscountRecords" type="List"/>
+        <aura:attribute name="discountRecords" type="List"/>
+    <aura:attribute name="shipmentMethodSelected" type="Object"/>
+    <aura:attribute name="otherServiceTypeDualListOptions" type="List"/>
     
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     
